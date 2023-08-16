@@ -17,7 +17,7 @@ function Info() {
             opportunities.
           </p>
           <Link
-            href="#"
+            href="https://www.apik.me"
             className="flex group gap-2 items-center duration-200 text-zinc-600 dark:text-zinc-400 cursor-pointer no-underline dark:hover:text-zinc-500 hover:text-zinc-700"
           >
             Read More{" "}
