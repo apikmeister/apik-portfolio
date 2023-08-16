@@ -29,7 +29,7 @@ function Info() {
         <div className="flex justify-center items-center">
           <Image
             className="rounded-md"
-            src="/apik.jpg"
+            src="https://res.cloudinary.com/dk9x6bja3/image/upload/v1692215780/apik_hxbvly.jpg"
             alt="apik"
             width={300}
             height={300}
