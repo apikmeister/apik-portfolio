@@ -17,10 +17,3 @@ export default async function Home() {
     </div>
   );
 }
-
-export async function getStaticProps() {
-  const topRepos = await getRepos();
-  return {
-    repos: topRepos,
-  };
-}
