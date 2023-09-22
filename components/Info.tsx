@@ -33,6 +33,7 @@ function Info() {
             alt="apik"
             width={300}
             height={300}
+            priority
           />
         </div>
       </div>

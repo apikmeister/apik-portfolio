@@ -42,8 +42,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-[#F1F5F9] dark:bg-[#121212]`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} `}>
         <Grain />
         <main className="min-w-0 px-2 md:px-0 max-w-4xl mb-40 mx-4 lg:mx-auto">
           <Providers>

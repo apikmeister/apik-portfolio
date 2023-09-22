@@ -1,18 +1,18 @@
 import { ImageResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"], style: "normal" });
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
-  // const searchParams = useSearchParams();
   const { searchParams } = req.nextUrl;
   const title = searchParams.get("title") || "No title";
-  const author = searchParams.get("author") || "Anonymous";
-  const date = searchParams.get("date") || "2022-11-08T12:00:00.000Z";
-  const cover = searchParams.get("cover");
+  const publishedAt = searchParams.get("date") || "";
+  const readTime = searchParams.get("readTime") || "";
+
+  const interSemiBold = fetch(
+    new URL("../../public/font/Inter-SemiBold.ttf", import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
@@ -23,22 +23,22 @@ export async function GET(req: NextRequest) {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          backgroundImage: "url(https://apik.me//og-bg.png)",
+          backgroundImage: "url(http://apik.me/og-bg.png)",
         }}
       >
         <div
           style={{
-            marginLeft: 190,
+            marginLeft: 80,
             marginRight: 190,
             display: "flex",
-            fontSize: 130,
+            fontSize: 80,
+            fontFamily: "Inter",
             letterSpacing: "-0.05em",
-            fontStyle: "normal",
             color: "white",
             lineHeight: "120px",
             whiteSpace: "pre-wrap",
+            flexWrap: "wrap",
           }}
-          className={inter.className}
         >
           {title}
         </div>
@@ -47,6 +47,14 @@ export async function GET(req: NextRequest) {
     {
       width: 1200,
       height: 630,
+      fonts: [
+        {
+          name: "Inter",
+          data: await interSemiBold,
+          style: "normal",
+          weight: 400,
+        },
+      ],
     }
   );
 }
