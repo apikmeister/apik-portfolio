@@ -1,7 +1,7 @@
-import { Post } from "contentlayer/generated";
+import { Blog } from "contentlayer/generated";
 import Link from "next/link";
 
-export default function PostCard(post: Post) {
+export default function PostCard(post: Blog) {
   return (
     <div className="mb-8">
       <h2 className="mb-1 text-xl">
@@ -12,8 +12,8 @@ export default function PostCard(post: Post) {
           {post.title}
         </Link>
       </h2>
-      <time dateTime={post.date} className="mb-2 block text-xs text-gray-600">
-        {new Intl.DateTimeFormat("en-US").format(new Date(post.date))}
+      <time dateTime={post.publishedAt} className="mb-2 block text-xs text-gray-600">
+        {new Intl.DateTimeFormat("en-US").format(new Date(post.publishedAt))}
       </time>
     </div>
   );

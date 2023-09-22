@@ -5,8 +5,35 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: "apik portfolio",
+  metadataBase: new URL("https://apik.me/"),
+  title: {
+    default: 'apikmeister',
+    template: '%s | apikmeister',
+  },
   description: "apik portfolio",
+  openGraph: {
+    title: 'apikmeister',
+    description: 'apik portfolio',
+    url: 'https://apik.me/',
+    siteName: 'apik portfolio',
+    locale: 'en_US',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  twitter: {
+    title: 'apikmeister',
+    card: 'summary_large_image',
+  },
 };
 
 export default function RootLayout({
@@ -16,7 +43,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} bg-[#F1F5F9] dark:bg-[#121212]`}>
         <Grain />
         <main className="min-w-0 px-2 md:px-0 max-w-4xl mb-40 mx-4 lg:mx-auto">
           <Providers>
