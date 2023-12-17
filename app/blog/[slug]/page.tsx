@@ -4,6 +4,7 @@ import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export async function generateMetadata({
   params,
@@ -50,8 +51,42 @@ export async function generateMetadata({
   };
 }
 
+
+function formatDate(date: string) {
+  let currentDate = new Date();
+  if (!date.includes("T")) {
+    date = `${date}T00:00:00`;
+  }
+  let targetDate = new Date(date);
+
+  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
+  let monthsAgo = currentDate.getMonth() - targetDate.getMonth();
+  let daysAgo = currentDate.getDate() - targetDate.getDate();
+
+  let formattedDate = "";
+
+  if (yearsAgo > 0) {
+    formattedDate = `${yearsAgo}y ago`;
+  } else if (monthsAgo > 0) {
+    formattedDate = `${monthsAgo}mo ago`;
+  } else if (daysAgo > 0) {
+    formattedDate = `${daysAgo}d ago`;
+  } else {
+    formattedDate = "Today";
+  }
+
+  let fullDate = targetDate.toLocaleString("en-us", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return `${fullDate} (${formattedDate})`;
+}
+
 const mdxComponents: MDXComponents = {
-  a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
+  a: ({ href, children }) => <Link href={href as string} className="underline-offset-2">{children}</Link>,
+  Image: (props) => <Image className="rounded-lg" {...props} />,
 };
 
 const PostLayout = ({ params }: { params: { slug: string } }) => {
@@ -61,20 +96,23 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <article className="mx-auto max-w-xl py-8">
+    <div className="mx-auto max-w-xl py-8">
       <div className="mb-8 text-center">
         <time
           dateTime={post.publishedAt}
           className="mb-1 text-xs text-gray-600"
         >
-          {new Intl.DateTimeFormat("en-US").format(new Date(post.publishedAt))}
+          {/* {new Intl.DateTimeFormat("en-US").format(new Date(post.publishedAt))} */}
+          {formatDate(post.publishedAt)}
         </time>
         <p>{post.readTime} min read</p>
         <h1 className="text-3xl font-bold">{post.title}</h1>
         <p>{post.excerpt}</p>
       </div>
-      <MDXContent components={mdxComponents} code={post.body.code} />
-    </article>
+      <article className="prose dark:prose-invert">
+        <MDXContent components={mdxComponents} code={post.body.code} />
+      </article>
+    </div>
   );
 };
 

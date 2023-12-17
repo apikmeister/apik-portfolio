@@ -1,0 +1,144 @@
+---
+title: Wargames CTF - Compromised
+publishedAt: 2023-12-17
+excerpt: Wargames CTF - Compromised Write-up
+tags:
+  - CTF
+  - Write-up
+---
+
+# Compromised
+
+<Image 
+  alt={`Compromised`}
+  src={`/images/2023-12-17/compromised/chall.png`}
+  width={600}
+  height={400}
+/>
+
+Given **evidence.zip** file with *Where aRe you?* hint.
+
+Let's unzip it and see what we have.
+
+<Image
+  alt={`unzip`}
+  src={`/images/2023-12-17/compromised/unzip.png`}
+  width={600}
+  height={400}
+/>
+
+It's looks like a lot of Windows folders and files with useless *.ini* and *.lnk* extensions. Let's try to find something interesting.
+
+<Image
+  alt={`interesting`}
+  src={`/images/2023-12-17/compromised/interesting.png`}
+  width={600}
+  height={400}
+  />
+
+Looks like I found a flag.png file. Let's try to open it.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/flag-png.png`}
+  width={600}
+  height={400}
+/>
+
+Hmm, it's seems like a corrupted file. Or... **maybe not?** Let's check it with terminal.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/flag-terminal.png`}
+  width={600}
+  height={400}
+/>
+
+Ahaa, it's a **zip** file. Let's unzip it.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/flag-unzip.png`}
+  width={600}
+  height={400}
+/>
+
+It's a **flag.txt** file, But it's **password protected**.
+
+Instead of brute force it, I decided to check all the folders to find more files.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/interesting2.png`}
+  width={600}
+  height={400}
+/>
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/interesting3.png`}
+  width={600}
+  height={400}
+/>
+
+I found a files with *.rdp* extension. It's a Remote Desktop Connection file. That's mean It previously had a connection to another computer.
+
+In Terminal Server Client folder I found a file with *.bin* extension and *.bmc* extension.
+I tried to google about it and find and article to a Medium post about it.
+
+[Medium Post](https://medium.com/@yashkumarnavadiya/htb-no-place-to-hide-easy-forensics-challenge-b025c864607a)
+
+It says that .bin file is a memory dump file and .bmc is a memory map file.
+
+I use terminal to check the .bin file.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/bin.png`}
+  width={600}
+  height={400}
+/>
+
+It has the same header as the Medium post. That's **RDP8bmp** format. Let's try to convert it to a image.
+
+I use the same tools as the Medium post.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/convert.png`}
+  width={600}
+  height={400}
+/>
+
+It's hard to see, with a lot of scattered images. So I found another workaround to combine it all together.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/combined.png`}
+  width={600}
+  height={400}
+/>
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/collage.png`}
+  width={600}
+  height={400}
+/>
+
+It's looks like a screenshot of a Windows desktop. Let's try to find something interesting.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/zip-pass.png`}
+  width={200}
+  height={200}
+/>
+
+Ahaa, a zip password, let's try to unzip the flag.txt file and get the flag.
+
+<Image
+  alt={`flag`}
+  src={`/images/2023-12-17/compromised/flag-unzip2.png`}
+  width={600}
+  height={400}
+/>
