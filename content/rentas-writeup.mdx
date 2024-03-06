@@ -1,0 +1,325 @@
+---
+title: rENTAS CTF by rawSEC - Write-up
+publishedAt: 2024-03-06
+excerpt: rENTAS CTF by rawSEC - Write-up
+tags:
+  - CTF
+  - Write-up
+  - rawSEC
+  - rENTAS
+---
+
+1. <a href={`#1-simple-lazy-web`}>Simple Lazy (Web)</a>
+2. <a href={`#2-hidden-discord-misc`}>Hidden Discord (Misc)</a>
+3. <a href={`#3-resign-letter-reverse-engineering`}>Resign Letter (Reverse Engineering)</a>
+4. <a href={`#4-medellín-cartel-osint`}>Medellín Cartel (OSINT)</a>
+5. <a href={`#5-last-hope-network`}>Last Hope (Network)</a>
+
+---
+
+### 1. Simple Lazy (Web)
+
+We are given a php website with a search form, and 3 links on the site.
+
+<Image
+  alt={`Simple Lazy Website`}
+  src={`/images/2024-03-06/rentas-ctf/web/web-given.png`}
+  width={600}
+  height={400}
+/>
+
+With further investigation, we found that the **Link 1** & **Link 2** give us some information about Linux, Ubuntu, Debian but **Link 3** showed a php error message.
+
+<Image
+  alt={`Simple Lazy Website`}
+  src={`/images/2024-03-06/rentas-ctf/web/useful-web.png`}
+  width={600}
+  height={400}
+/>
+
+Based on the error, it seems that the website may be vulnerable to Local File Inclusion (LFI) attack.
+
+Found a github repo that shows us how to [exploit Local File Inclusion (LFI)](https://github.com/qazbnm456/awesome-security-trivia/blob/master/Tricky-ways-to-exploit-PHP-Local-File-Inclusion.md). We can use the LFI with the php://filter to read the source code of **page3.php** in base64.
+
+```
+https://simplelazy.ctf.rawsec.com/index.php?page=php://filter/convert.base64-encode/resource=/var/www/html/page3
+```
+
+<Image
+  alt={`Decoded Base64 of page3.php`}
+  src={`/images/2024-03-06/rentas-ctf/web/decode-page3.png`}
+  width={600}
+  height={400}
+/>
+
+Decode page3.php base64 and follow to **esdasxasdcessxsadx.php**.
+
+```
+https://simplelazy.ctf.rawsec.com/index.php?page=php://filter/convert.base64-encode/resource=/var/www/html/esdasxasdcessxsadx
+```
+
+<Image
+  alt={`Decoded Base64 of esdasxasdcessxsadx.php`}
+  src={`/images/2024-03-06/rentas-ctf/web/decode-flag.png`}
+  width={600}
+  height={400}
+/>
+
+The flag is there nice `RWSC{S1MPL3_4ND_L4ZY}`.
+
+---
+
+## 2. Hidden Discord (Misc)
+
+For this challenge, we obtained an invite link to a discord server named Hidden Discord.
+
+<Image
+  alt={`Hidden Discord Server`}
+  src={`/images/2024-03-06/rentas-ctf/misc/hidden-discord.png`}
+  width={600}
+  height={400}
+/>
+
+Goes straight to the discord server owner profile and check for any clue or flags!
+
+<Image
+  alt={`Hidden Discord Server Owner`}
+  src={`/images/2024-03-06/rentas-ctf/misc/zoragon.png`}
+  width={300}
+  height={200}
+/>
+
+Looks like the owner have a role named **_hidden roles_**. Maybe there is flag in the roles description or something.
+
+The topic of text channel **hints** also gave us a hint to look at the roles.
+
+But I can't seem to find a way to look deeper into the roles and continue to look into another obvious section of the discord server.
+
+<Image
+  alt={`Hidden Discord Event`}
+  src={`/images/2024-03-06/rentas-ctf/misc/event.png`}
+  width={500}
+  height={300}
+/>
+
+There's an event happening now on the server. By clicking on the event, we can see the event details with a **PART 3** for the flag that is **d3v3l0p3r\_**. We also have a clue to **Find the CATegory? 🐈‍⬛🐈**. Maybe we need to find a **cat** that knows how to use discord :3. I continue the adventure...
+
+<Image
+  alt={`Voice Channel Chat`}
+  src={`/images/2024-03-06/rentas-ctf/misc/voice-channel-chat.png`}
+  width={500}
+  height={300}
+/>
+
+By peeking into the voice channel chat, we got the **PART 1** of the flag which is **RWSC\{r34d\_**.
+
+I happened to notice something is off with server **icon**. The server icon got an odd color on the white background. I used Discord Web and Inspect Element to try to download the server icon and check the image.
+
+<Image
+  alt={`Hidden Discord Server Icon`}
+  src={`/images/2024-03-06/rentas-ctf/misc/server-icon.webp`}
+  width={300}
+  height={200}
+/>
+
+Looks like we found another part. I used the given icon link from discord to enlarge it using the size parameter.
+
+```
+https://cdn.discordapp.com/icons/1202263455466541096/bfa6d5f2ed8067d3367791ed5b4d6941.webp?size=320
+```
+
+The **PART 5** of the flag is **r3f3r3nc3\}**.
+
+```
+RWSC{r34d_ - PART 1
+- PART 2
+d3v3l0p3r_ - PART 3
+- PART 4
+r3f3r3nc3} - PART 5
+```
+
+2 more parts to go. I continue to look for the **cat** in server members using the search and found the **cat**. The **cat** doesn't seem to be appeared in the member list. Maybe because he have the _*hidden roles*_.
+
+Here I got stuck to find the last 2 parts of the flag but then I remembered there is a discord bot that can give information about the server details in deep. Maybe some API or something that can help me to find the last 2 parts of the flag.
+
+Tried to read the discord api documentation and found a way to retrieve **server info** using api. So I started to CURL the server info.
+
+```console
+┌──(kali㉿kali)-[~/Downloads]
+└─$ curl https://discord.com/api/v9/guilds/1202263455466541096 -H "Authorization: <REDACTED>"
+```
+
+and we got the response with the **PART 2** of the flag which is **d15c0rd\_**.
+
+```json
+...
+    {
+      "id": "1202265647393021994",
+      "name": "PART 2:d15c0rd_",
+      "description": null,
+      "permissions": "0",
+      "position": 2,
+      "color": 0,
+      "hoist": false,
+      "managed": false,
+      "mentionable": false,
+      "icon": null,
+      "unicode_emoji": null,
+      "flags": 0
+    },
+...
+```
+
+~~btw I started to guess the flag here lmao.~~
+
+Then I continue to play around with the discord api around the channel category and found a hit for our **PART 4** of the flag which is **API\_**.
+
+```console
+┌──(kali㉿kali)-[~/Downloads]
+└─$ curl https://discord.com/api/v9/guilds/1202263455466541096/channels -H "Authorization: <REDACTED>"
+```
+
+```json
+...
+  {
+    "id": "1202265477645082685",
+    "type": 4,
+    "flags": 0,
+    "guild_id": "1202263455466541096",
+    "name": "PART 4:API_",
+    "parent_id": null,
+    "position": 1,
+    "permission_overwrites": [
+      {
+        "id": "1202263455466541096",
+        "type": 0,
+        "allow": "0",
+        "deny": "410112263454033"
+      }
+    ]
+  },
+...
+```
+
+Combine it all together and we got the flag `RWSC{r34d_d15c0rd_d3v3l0p3r_API_r3f3r3nc3}`.
+
+---
+
+## 3. Resign Letter (Reverse Engineering)
+
+We are given a zip file that contains a **.dotm** file. Searching through google that we know that the file is a Word 2007 template file.
+
+But what we have to reverse on a Microsoft Word file?! I don't have any idea. So I binwalk the file to see a bunch of file inside it then extracted it all.
+
+<Image
+  alt={`Binwalk .dotm file`}
+  src={`/images/2024-03-06/rentas-ctf/reverse/binwalk.png`}
+  width={400}
+  height={200}
+/>
+
+I lost and try to google for **Word Reverse Engineering** and found this useful blog post on [How to reverse engineer MSWord malware](https://www.pentestpartners.com/security-blog/how-to-reverse-engineer-msword-malware/). This is so helpful because the question said the **.dotm** file was detected as a virus.
+
+Going through all the files, I found a the similar **vbaProject.bin** file in zip that we extracted.
+
+I found a useful decompiler for the VBA bin file that is [pcode2code](https://github.com/Big5-sec/pcode2code) and decompile the **vbaProject.bin** file.
+
+<Image
+  alt={`Decompiled VBA Code`}
+  src={`/images/2024-03-06/rentas-ctf/reverse/vba2code.png`}
+  width={600}
+  height={400}
+/>
+
+Welp, we found a link to an **.exe** file and proceed to download it.
+Fool me, think it was now the time to do the "**_real Reverse Engineering_**" on the **.exe** file. I used **Ghidra** to decompile it and found nothing.
+
+I was stuck and then i tried to just view the **.exe** **_strings_**.
+
+<Image
+  alt={`Strings of .exe file`}
+  src={`/images/2024-03-06/rentas-ctf/reverse/password.png`}
+  width={600}
+  height={400}
+/>
+
+Here I found the command to add user with the password in base64 as the flag... It was this easy after all T_T.
+
+Decode the password and we got the flag `RWSC{p@ss123}`.
+
+---
+
+## 4. Medellín Cartel (OSINT)
+
+For this OSINT challenge, we are given a tree information about the Medellín Cartel. I am stuck**_(skill issue)_**. And maybe I am not a good detective T_T.
+
+Not until the hint released!!
+
+```
+Hint 3#
+
+Okay here's the clue.. After all day, u guys deserve this.
+
+Medellin Cartel:
+You might think the given picture, is useless. Guessy. But its not. If u are about to investigate a crime group. You have to criminal-profile every single member of the group. E.g what they do, eat, visit, etc. If u recon, Blacky AKA Nelson Hernandez is the only sicarios that has went to uniten IG. U should focus on that acc only. For real - If u went to other sicarios, u will get lost. Next step? Technical stuff. Dig the flag inside the IG, metadata is there. That is how u profile someone, dig deeper as u could on that acc.
+```
+
+My teammate found the [**blacky**](https://www.instagram.com/nelsonhernandez144/) account on Instagram. I used the **exiftool** to extract the metadata of the image but no luck. Tried a lot of metadata but still no luck.
+
+Until I wanted to tried to inspect the instagram page and search for the flag format **RWSC** and bingo!!
+
+<Image
+  alt={`Instagram Flag on alt text`}
+  src={`/images/2024-03-06/rentas-ctf/osint/inspect.png`}
+  width={600}
+  height={400}
+/>
+
+We found the flag on the alt text of the instagram post profile feed image. `RWSC{Bl4cky_S1c4r1o}`
+
+---
+
+## 5. Last Hope (Network)
+
+For this challenge, we are given a cap file. As I opened the cap file using **Wireshark**, I already saw the SSID for the network.
+
+<Image
+  alt={`Wireshark SSID`}
+  src={`/images/2024-03-06/rentas-ctf/network/cap-file.png`}
+  width={600}
+  height={400}
+/>
+
+I go straight to **Wireless > WLAN Traffic** as we know that we are dealing with a WiFi Connection.
+
+<Image
+  alt={`Wireshark WLAN Traffic`}
+  src={`/images/2024-03-06/rentas-ctf/network/wlan-mac.png`}
+  width={600}
+  height={400}
+/>
+
+Now as we got the address for the Connection, I tried to filter the traffic using the **MAC Address** to find a wethere there is complete **EAPOL** 4 of 4 handshake.
+
+<Image
+  alt={`Wireshark EAPOL 4 of 4`}
+  src={`/images/2024-03-06/rentas-ctf/network/complete-handshake.png`}
+  width={600}
+  height={400}
+/>
+
+As we got the complete handshake, I tried to use **aircrack-ng** to crack the password using **wifite.txt** wordlist instead of **rockyou.txt**.
+
+```console
+┌──(kali㉿kali)-[~/Downloads]
+└─$ aircrack-ng -w /usr/share/wordlists/wifite.txt -b 7e:7f:a3:4c:5c:1a RAWSECWIFI-01.cap
+```
+
+<Image
+  alt={`Aircrack-ng Password`}
+  src={`/images/2024-03-06/rentas-ctf/network/cracked-pass.png`}
+  width={600}
+  height={400}
+/>
+
+and we got the flag as `RWSC{anonymous}`.

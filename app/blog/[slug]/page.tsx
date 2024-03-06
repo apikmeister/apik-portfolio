@@ -5,6 +5,25 @@ import type { MDXComponents } from "mdx/types";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { promises as fs } from "fs";
+import { serialize } from "next-mdx-remote/serialize";
+import { type MDXRemoteSerializeResult } from "next-mdx-remote";
+
+
+// async function getPost(slug: string): Promise<Post {
+//   const source = await fs.readFile(slug, "utf8");
+
+//   const serialized = await serialize(source, {
+//     parseFrontmatter: true,
+//   })
+
+//   const frontmatter = serialized.frontmatter as Frontmatter;
+
+//   return {
+//     frontmatter,
+//     serialized,
+//   }
+// }
 
 export async function generateMetadata({
   params,
@@ -86,7 +105,7 @@ function formatDate(date: string) {
 
 const mdxComponents: MDXComponents = {
   a: ({ href, children }) => <Link href={href as string} className="underline-offset-2">{children}</Link>,
-  Image: (props) => <Image className="rounded-lg" {...props} />,
+  Image: (props) => <Image className="rounded-lg mx-auto" {...props} />,
 };
 
 const PostLayout = ({ params }: { params: { slug: string } }) => {
@@ -102,7 +121,6 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
           dateTime={post.publishedAt}
           className="mb-1 text-xs text-gray-600"
         >
-          {/* {new Intl.DateTimeFormat("en-US").format(new Date(post.publishedAt))} */}
           {formatDate(post.publishedAt)}
         </time>
         <p>{post.readTime} min read</p>
