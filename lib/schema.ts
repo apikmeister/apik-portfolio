@@ -1,16 +1,16 @@
 import { InferModel } from 'drizzle-orm';
-import { int, mysqlTable, serial, varchar, timestamp } from 'drizzle-orm/mysql-core';
+import { integer, pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
  
-export const GuestbookTable = mysqlTable('guestbook', {
+export const GuestbookTable = pgTable('guestbook', {
 	id: serial('id').primaryKey(),
 	body: varchar('body', { length: 256 }).notNull(),
   created_by: varchar('created_by', { length: 256 }).notNull(),
   updated_at: timestamp('updated_at').defaultNow(),
 });
 
-export const viewsTable = mysqlTable('viewstable', {
+export const viewsTable = pgTable('viewstable', {
 	slug: varchar('slug', { length: 256 }).primaryKey(),
-  count: int('count').notNull(),
+  count: integer('count').notNull(),
 });
  
 export type GuestBookTable = InferModel<typeof GuestbookTable>;

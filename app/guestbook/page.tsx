@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { queryBuilder } from 'lib/planetscale';
+import { queryBuilder } from 'lib/database';
 import { SignIn, SignOut } from './buttons';
 import Form from './form';
 import { getServerSession } from 'next-auth/next';

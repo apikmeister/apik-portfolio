@@ -1,6 +1,6 @@
 // import 'server-only' not working with API routes yet
-import { Generated, Kysely } from 'kysely';
-import { PlanetScaleDialect } from 'kysely-planetscale';
+import { Generated, Kysely, PostgresDialect } from 'kysely';
+import { Pool } from 'pg';
 
 interface GuestbookTable {
   id: Generated<number>;
@@ -21,7 +21,9 @@ interface Database {
 }
 
 export const queryBuilder = new Kysely<Database>({
-  dialect: new PlanetScaleDialect({
-    url: process.env.DATABASE_URL,
-  }),
+  dialect: new PostgresDialect({
+    pool: new Pool({
+      connectionString: process.env.DATABASE_URL,
+    })
+  })
 });

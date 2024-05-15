@@ -3,7 +3,7 @@
 // import { auth } from 'lib/auth';
 import { getServerSession } from 'next-auth/next';
 import { type Session } from 'next-auth';
-import { queryBuilder } from 'lib/planetscale';
+import { queryBuilder } from 'lib/database';
 import { revalidatePath } from 'next/cache';
 import { authOptions } from './auth';
 
