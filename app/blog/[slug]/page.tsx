@@ -30,7 +30,7 @@ export async function generateMetadata({
     excerpt: description,
     image,
     // slug
-  } = post;
+  } = post.metadata;
   const ogImage = image
     ? `https://apik.me${image}`
     : `https://apik.me/og?title=${title}`;
@@ -94,7 +94,7 @@ function formatDate(date: string) {
 //   Image: (props) => <Image className="rounded-lg mx-auto" {...props} />,
 // };
 
-export default function PostLayout({ params }) {
+export default function PostLayout({ params }: any) {
   // const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
   let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) notFound();
