@@ -4,10 +4,11 @@
 import { getServerSession } from 'next-auth/next';
 import { type Session } from 'next-auth';
 import { queryBuilder } from 'lib/database';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_noStore as noStore } from 'next/cache';
 import { authOptions } from './auth';
 
 export async function increment(slug: string) {
+  noStore();
   const data = await queryBuilder
     .selectFrom('views')
     .where('slug', '=', slug)

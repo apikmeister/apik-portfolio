@@ -1,10 +1,5 @@
-const { withContentlayer } = require('next-contentlayer')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        serverActions: true,
-    },
     images: {
         domains: ['res.cloudinary.com']
     },
@@ -12,4 +7,4 @@ const nextConfig = {
     swcMinify: true
 };
 
-module.exports = withContentlayer(nextConfig);
+module.exports = nextConfig;

@@ -8,7 +8,7 @@ export const GuestbookTable = pgTable('guestbook', {
   updated_at: timestamp('updated_at').defaultNow(),
 });
 
-export const viewsTable = pgTable('viewstable', {
+export const viewsTable = pgTable('views', {
 	slug: varchar('slug', { length: 256 }).primaryKey(),
   count: integer('count').notNull(),
 });
