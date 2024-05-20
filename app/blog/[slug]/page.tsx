@@ -1,6 +1,4 @@
-import { allBlogs } from "contentlayer/generated";
 import { notFound } from "next/navigation";
-import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { Metadata } from "next";
 import Link from "next/link";

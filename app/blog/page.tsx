@@ -1,4 +1,3 @@
-import { allBlogs } from "contentlayer/generated";
 import { PostCard } from "@/components";
 import Link from "next/link";
 import { Suspense } from "react";

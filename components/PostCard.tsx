@@ -1,4 +1,3 @@
-import { Blog } from "contentlayer/generated";
 import Link from "next/link";
 
 export default function PostCard(post: Blog) {
