@@ -1,6 +1,4 @@
-import { allBlogs } from "contentlayer/generated";
 import { notFound } from "next/navigation";
-import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -8,29 +6,20 @@ import Image from "next/image";
 import { promises as fs } from "fs";
 import { serialize } from "next-mdx-remote/serialize";
 import { type MDXRemoteSerializeResult } from "next-mdx-remote";
-
-
-// async function getPost(slug: string): Promise<Post {
-//   const source = await fs.readFile(slug, "utf8");
-
-//   const serialized = await serialize(source, {
-//     parseFrontmatter: true,
-//   })
-
-//   const frontmatter = serialized.frontmatter as Frontmatter;
-
-//   return {
-//     frontmatter,
-//     serialized,
-//   }
-// }
+import { getBlogPosts } from "@/lib/blog";
+import { Suspense, cache } from "react";
+import { getViewsCount } from "@/lib/metrics";
+import ViewCounter from "../view-counter";
+import { MDXContent } from "@/components/mdx-content";
+import { increment } from "@/lib/actions";
 
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata | undefined> {
-  const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
+  // const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
+  let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) {
     return;
   }
@@ -40,8 +29,8 @@ export async function generateMetadata({
     publishedAt: publishedTime,
     excerpt: description,
     image,
-    slug
-  } = post;
+    // slug
+  } = post.metadata;
   const ogImage = image
     ? `https://apik.me${image}`
     : `https://apik.me/og?title=${title}`;
@@ -54,7 +43,7 @@ export async function generateMetadata({
       description,
       type: "article",
       publishedTime,
-      url: `https://apik.me/blog/${slug}`,
+      url: `https://apik.me/blog/${post.slug}`,
       images: [
         {
           url: ogImage,
@@ -72,17 +61,14 @@ export async function generateMetadata({
 
 
 function formatDate(date: string) {
-  let currentDate = new Date();
-  if (!date.includes("T")) {
-    date = `${date}T00:00:00`;
-  }
-  let targetDate = new Date(date);
+  const currentDate = new Date();
+  const targetDate = new Date(date);
 
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth();
-  let daysAgo = currentDate.getDate() - targetDate.getDate();
+  const yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
+  const monthsAgo = currentDate.getMonth() - targetDate.getMonth();
+  const daysAgo = currentDate.getDate() - targetDate.getDate();
 
-  let formattedDate = "";
+  let formattedDate = '';
 
   if (yearsAgo > 0) {
     formattedDate = `${yearsAgo}y ago`;
@@ -91,47 +77,81 @@ function formatDate(date: string) {
   } else if (daysAgo > 0) {
     formattedDate = `${daysAgo}d ago`;
   } else {
-    formattedDate = "Today";
+    formattedDate = 'Today';
   }
 
-  let fullDate = targetDate.toLocaleString("en-us", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
+  const fullDate = targetDate.toLocaleString('en-us', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
   });
 
   return `${fullDate} (${formattedDate})`;
 }
 
-const mdxComponents: MDXComponents = {
-  a: ({ href, children }) => <Link href={href as string} className="underline-offset-2">{children}</Link>,
-  Image: (props) => <Image className="rounded-lg mx-auto" {...props} />,
-};
+// const mdxComponents: MDXComponents = {
+//   a: ({ href, children }) => <Link href={href as string} className="underline-offset-2">{children}</Link>,
+//   Image: (props) => <Image className="rounded-lg mx-auto" {...props} />,
+// };
 
-const PostLayout = ({ params }: { params: { slug: string } }) => {
-  const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
+export default function PostLayout({ params }: any) {
+  // const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
+  let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) notFound();
 
-  const MDXContent = useMDXComponent(post.body.code);
+  // const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <div className="mx-auto max-w-xl py-8">
+    <section className="mx-auto max-w-xl py-8">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.metadata.title,
+            datePublished: post.metadata.publishedAt,
+            dateModified: post.metadata.publishedAt,
+            description: post.metadata.summary,
+            image: post.metadata.image
+              ? `https://apik.me${post.metadata.image}`
+              : `https://apik.me/og?title=${post.metadata.title}`,
+            url: `https://apik.me/blog/${post.slug}`,
+            author: {
+              '@type': 'Person',
+              name: 'Afiq',
+            },
+          }),
+        }}
+      />
       <div className="mb-8 text-center">
         <time
-          dateTime={post.publishedAt}
+          dateTime={post.metadata.publishedAt}
           className="mb-1 text-xs text-gray-600"
         >
-          {formatDate(post.publishedAt)}
+          {formatDate(post.metadata.publishedAt)}
         </time>
-        <p>{post.readTime} min read</p>
-        <h1 className="text-3xl font-bold">{post.title}</h1>
-        <p>{post.excerpt}</p>
+        <Suspense fallback={<p className="h-5" />}>
+          <Views slug={post.slug} />
+        </Suspense>
+        <p>{post.metadata.readTime} min read</p>
+        <h1 className="text-3xl font-bold">{post.metadata.title}</h1>
+        <p>{post.metadata.excerpt}</p>
       </div>
       <article className="prose dark:prose-invert">
-        <MDXContent components={mdxComponents} code={post.body.code} />
+        <MDXContent source={post.content} />
       </article>
-    </div>
+    </section>
   );
 };
 
-export default PostLayout;
+let incrementViews = cache(increment);
+
+async function Views({ slug }: { slug: string }) {
+  let views = await getViewsCount();
+  incrementViews(slug);
+
+  return <ViewCounter allViews={views} slug={slug} />;
+}
+

@@ -7,7 +7,7 @@ import Info from "./Info"
 import Logo from "./Logo"
 import Providers from "./Providers"
 import Skills from "./Skills"
-import PostCard from "./PostCard"
+// import PostCard from "./PostCard"
 import MasonryGrid from "./MasonryGrid"
 import Projects from "./Projects"
 
@@ -21,7 +21,7 @@ export {
     Logo,
     Providers,
     Skills,
-    PostCard,
+    // PostCard,
     MasonryGrid,
     Projects
 }

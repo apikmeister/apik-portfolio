@@ -4,22 +4,20 @@
 import { getServerSession } from 'next-auth/next';
 import { type Session } from 'next-auth';
 import { queryBuilder } from 'lib/database';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_noStore as noStore } from 'next/cache';
 import { authOptions } from './auth';
+import { sql } from 'kysely';
 
 export async function increment(slug: string) {
-  const data = await queryBuilder
-    .selectFrom('views')
-    .where('slug', '=', slug)
-    .select(['count'])
-    .execute();
-
-  const views = !data.length ? 0 : Number(data[0].count);
-
-  return queryBuilder
+  noStore();
+  
+  await queryBuilder
     .insertInto('views')
     .values({ slug, count: 1 })
-    .onDuplicateKeyUpdate({ count: views + 1 })
+    .onConflict((oc) => oc
+      .column('slug')
+      .doUpdateSet({ count: sql`${sql.ref('views.count')} + 1` })
+    )
     .execute();
 }
 
