@@ -24,6 +24,7 @@
     "drizzle-orm": "^0.30.10",
     "eslint-config-next": "^14.2.3",
     "framer-motion": "^10.12.21",
+    "gray-matter": "^4.0.3",
     "hastscript": "^8.0.0",
     "kysely": "^0.26.1",
     "lucide-react": "^0.260.0",
