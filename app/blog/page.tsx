@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import ViewCounter from './view-counter';
+import ViewCounter from "./view-counter";
 import { getViewsCount } from "lib/metrics";
 import { getBlogPosts } from "lib/blog";
 
@@ -46,20 +46,3 @@ async function Views({ slug }: { slug: string }) {
 
   return <ViewCounter allViews={views} slug={slug} />;
 }
-
-// export default function Home() {
-//   const posts = allBlogs.sort(
-//     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-//   );
-
-//   return (
-//     <div className="mx-auto max-w-xl py-8">
-//       <h1 className="mb-8 text-center text-2xl font-black">
-//         My Blog Posts
-//       </h1>
-//       {posts.map((post, idx) => (
-//         <PostCard key={idx} {...post} />
-//       ))}
-//     </div>
-//   );
-// }
