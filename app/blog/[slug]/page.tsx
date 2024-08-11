@@ -1,11 +1,5 @@
 import { notFound } from "next/navigation";
-import type { MDXComponents } from "mdx/types";
 import { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
-import { promises as fs } from "fs";
-import { serialize } from "next-mdx-remote/serialize";
-import { type MDXRemoteSerializeResult } from "next-mdx-remote";
 import { getBlogPosts } from "@/lib/blog";
 import { Suspense, cache } from "react";
 import { getViewsCount } from "@/lib/metrics";
@@ -18,7 +12,6 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata | undefined> {
-  // const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
   let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) {
     return;
@@ -29,7 +22,6 @@ export async function generateMetadata({
     publishedAt: publishedTime,
     excerpt: description,
     image,
-    // slug
   } = post.metadata;
   const ogImage = image
     ? `https://apik.me${image}`
@@ -59,7 +51,6 @@ export async function generateMetadata({
   };
 }
 
-
 function formatDate(date: string) {
   const currentDate = new Date();
   const targetDate = new Date(date);
@@ -68,7 +59,7 @@ function formatDate(date: string) {
   const monthsAgo = currentDate.getMonth() - targetDate.getMonth();
   const daysAgo = currentDate.getDate() - targetDate.getDate();
 
-  let formattedDate = '';
+  let formattedDate = "";
 
   if (yearsAgo > 0) {
     formattedDate = `${yearsAgo}y ago`;
@@ -77,29 +68,21 @@ function formatDate(date: string) {
   } else if (daysAgo > 0) {
     formattedDate = `${daysAgo}d ago`;
   } else {
-    formattedDate = 'Today';
+    formattedDate = "Today";
   }
 
-  const fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  const fullDate = targetDate.toLocaleString("en-us", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 
   return `${fullDate} (${formattedDate})`;
 }
 
-// const mdxComponents: MDXComponents = {
-//   a: ({ href, children }) => <Link href={href as string} className="underline-offset-2">{children}</Link>,
-//   Image: (props) => <Image className="rounded-lg mx-auto" {...props} />,
-// };
-
 export default function PostLayout({ params }: any) {
-  // const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug);
   let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) notFound();
-
-  // const MDXContent = useMDXComponent(post.body.code);
 
   return (
     <section className="mx-auto max-w-xl py-8">
@@ -108,8 +91,8 @@ export default function PostLayout({ params }: any) {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
             headline: post.metadata.title,
             datePublished: post.metadata.publishedAt,
             dateModified: post.metadata.publishedAt,
@@ -119,8 +102,8 @@ export default function PostLayout({ params }: any) {
               : `https://apik.me/og?title=${post.metadata.title}`,
             url: `https://apik.me/blog/${post.slug}`,
             author: {
-              '@type': 'Person',
-              name: 'Afiq',
+              "@type": "Person",
+              name: "Afiq",
             },
           }),
         }}
@@ -144,7 +127,7 @@ export default function PostLayout({ params }: any) {
       </article>
     </section>
   );
-};
+}
 
 let incrementViews = cache(increment);
 
@@ -154,4 +137,3 @@ async function Views({ slug }: { slug: string }) {
 
   return <ViewCounter allViews={views} slug={slug} />;
 }
-
