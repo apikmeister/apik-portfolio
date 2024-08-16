@@ -6,6 +6,7 @@ import { getViewsCount } from "@/lib/metrics";
 import ViewCounter from "../view-counter";
 import { MDXContent } from "@/components/mdx-content";
 import { increment } from "@/lib/actions";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 export async function generateMetadata({
   params,
@@ -51,34 +52,7 @@ export async function generateMetadata({
   };
 }
 
-function formatDate(date: string) {
-  const currentDate = new Date();
-  const targetDate = new Date(date);
 
-  const yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
-  const monthsAgo = currentDate.getMonth() - targetDate.getMonth();
-  const daysAgo = currentDate.getDate() - targetDate.getDate();
-
-  let formattedDate = "";
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`;
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`;
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`;
-  } else {
-    formattedDate = "Today";
-  }
-
-  const fullDate = targetDate.toLocaleString("en-us", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  return `${fullDate} (${formattedDate})`;
-}
 
 export default function PostLayout({ params }: any) {
   let post = getBlogPosts().find((post) => post.slug === params.slug);
