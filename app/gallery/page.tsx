@@ -1,33 +1,24 @@
-import { MasonryGrid } from '@/components'
-import { albums } from '@/data/albums'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+import GalleryList from "@/components/GalleryList";
+import { albums } from "@/data/albums";
 
-const GalleryList = () => {
-  return (
-    <div>
-      {/* <GalleryLayout / */}
-      <h1>Albums</h1>
-      <ul>
-        {albums.map((album) => (
-          <li key={album.id}>
-            <Link href={`/gallery/${album.id}`}>
-              <div>
-                <Image
-                  src={album.thumbnail}
-                  alt={`${album.name} thumbnail`}
-                  width={150}
-                  height={150}
-                />
-                <h2>{album.name}</h2>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+interface GalleryPageProps {
+  searchParams: { page?: string };
 }
 
-export default GalleryList
+export default function GalleryPage({ searchParams }: GalleryPageProps) {
+  const ALBUMS_PER_PAGE = 8;
+
+  const currentPage = parseInt(searchParams.page || "1", 10);
+  const totalPages = Math.ceil(albums.length / ALBUMS_PER_PAGE);
+
+  const startIdx = (currentPage - 1) * ALBUMS_PER_PAGE;
+  const paginatedAlbums = albums.slice(startIdx, startIdx + ALBUMS_PER_PAGE);
+
+  return (
+    <GalleryList
+      albums={paginatedAlbums}
+      currentPage={currentPage}
+      totalPages={totalPages}
+    />
+  );
+}

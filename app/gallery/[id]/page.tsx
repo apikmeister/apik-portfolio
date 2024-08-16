@@ -14,7 +14,7 @@ const GalleryPage = ({ params }: GalleryPageProps) => {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <GalleryLayout albumId={album.id} />
     </div>
   );
