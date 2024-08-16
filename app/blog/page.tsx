@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import ViewCounter from "./view-counter";
 import { getViewsCount } from "lib/metrics";
 import { getBlogPosts } from "lib/blog";
+import { Views } from "@/components/Views";
 
 export default function BlogList() {
   let allBlogs = getBlogPosts();
@@ -39,10 +40,4 @@ export default function BlogList() {
         ))}
     </section>
   );
-}
-
-async function Views({ slug }: { slug: string }) {
-  let views = await getViewsCount();
-
-  return <ViewCounter allViews={views} slug={slug} />;
 }
