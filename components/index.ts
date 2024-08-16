@@ -9,6 +9,10 @@ import Providers from "./Providers"
 import Skills from "./Skills"
 import MasonryGrid from "./MasonryGrid"
 import Projects from "./Projects"
+import IconCloud from "./IconCloud"
+import MyStack from "./MyStack"
+import BlurFade from "./BlurFade"
+import GalleryLayout from "./GalleryLayout"
 
 export {
     About,
@@ -21,5 +25,9 @@ export {
     Providers,
     Skills,
     MasonryGrid,
-    Projects
+    Projects,
+    IconCloud,
+    MyStack,
+    BlurFade,
+    GalleryLayout
 }
