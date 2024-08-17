@@ -46,14 +46,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} `}>
         <Grain />
-        <main className="min-w-0 px-2 md:px-0 max-w-4xl mb-10 mx-4 lg:mx-auto">
+        <main className="">
           <Providers>
             <Header />
             {children}
           </Providers>
         </main>
         <Footer />
-
       </body>
     </html>
   );
