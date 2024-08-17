@@ -1,6 +1,5 @@
 import { About, IconCloud, Info, MasonryGrid, MyStack, Projects, Skills } from "@/components";
 import { getRepos } from "@/lib/repos";
-import { Repos, TopRepos } from "@/lib/types";
 
 export default async function Home() {
   const repos = await getRepos();

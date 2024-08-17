@@ -1,12 +1,13 @@
+import { formatDate, formatDateMonth } from "@/lib/utils/dateFormat";
 import Link from "next/link";
-import React from "react";
 
 interface Album {
-  id: string;
+  id: number;
+  album_id: string;
   name: string;
-  description: string;
+  description?: string;
+  date: string;
   thumbnail: string;
-  images: string[];
 }
 
 interface GalleryListProps {
@@ -17,16 +18,18 @@ interface GalleryListProps {
 
 const GalleryList = ({ albums, currentPage, totalPages }: GalleryListProps) => {
   return (
-    <div>
-      <h1>Albums</h1>
-      <section className="grid grid-cols-1 gap-6 p-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:p-6">
+    <section>
+      <h1 className="font-medium text-2xl mb-4 tracking-tighter">
+        through my lens
+      </h1>
+      <section className="grid grid-cols-1 gap-6 py-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:py-6">
         {albums.map((album) => (
           <div
             key={album.id}
             className="group relative overflow-hidden rounded-lg shadow-sm transition-all hover:shadow-md"
           >
             <Link
-              href={`/gallery/${album.id}`}
+              href={`/gallery/${album.album_id}`}
               className="absolute inset-0 z-10"
               prefetch={false}
             >
@@ -41,7 +44,7 @@ const GalleryList = ({ albums, currentPage, totalPages }: GalleryListProps) => {
             />
             <div className="bg-background p-4">
               <h3 className="text-lg font-semibold">{album.name}</h3>
-              <p className="text-sm text-muted-foreground">August 2023</p>
+              <p className="text-sm text-muted-foreground">{formatDateMonth(album.date)}</p>
             </div>
           </div>
         ))}
@@ -79,7 +82,7 @@ const GalleryList = ({ albums, currentPage, totalPages }: GalleryListProps) => {
           </button>
         </Link>
       </div>
-    </div>
+    </section>
   );
 };
 

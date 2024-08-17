@@ -1,5 +1,5 @@
-import { albums } from '@/data/albums';
 import EXIF from 'exif-js';
+import { getAlbumById, getImageByAlbumId } from '../actions';
 
 interface ExifData {
   Model?: string;
@@ -12,14 +12,14 @@ interface ExifData {
 interface ImageWithExif {
   src: string;
   alt: string;
-  isLandscape: boolean;
   exifData: ExifData;
 }
 
 const fetchExifData = async (imageSrc: string): Promise<ExifData> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = imageSrc;
+    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(imageSrc)}`;
+    img.src = proxyUrl;
     img.onload = () => {
       //@ts-ignore
       EXIF.getData(img, function () {
@@ -35,19 +35,24 @@ const fetchExifData = async (imageSrc: string): Promise<ExifData> => {
 };
 
 export const getImagesWithExif = async (albumId: string): Promise<ImageWithExif[]> => {
-  const album = albums.find((album) => album.id === albumId);
+  const album = await getAlbumById(albumId);
 
   if (!album) {
     throw new Error(`Album with id ${albumId} not found`);
   }
 
+  const images = await getImageByAlbumId(album.album_id);
+
+  if (!images || images.length === 0) {
+    return [];
+  }
+
   const imagesWithExif = await Promise.all(
-    album.images.map(async (imageSrc) => {
-      const exifData = await fetchExifData(imageSrc);
+    images.map(async (image) => {
+      const exifData = await fetchExifData(image.image_url);
       return {
-        src: imageSrc,
+        src: image.image_url,
         alt: `Image from ${album.name}`,
-        isLandscape: true, // Update based on your logic or image data
         exifData,
       };
     })

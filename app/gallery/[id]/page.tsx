@@ -1,5 +1,5 @@
 import { GalleryLayout } from "@/components";
-import { albums } from "@/data/albums";
+import { getAlbumById } from "@/lib/actions";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -12,7 +12,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata | undefined> {
-  const album = albums.find((a) => a.id === params.id);
+  const album = await getAlbumById(params.id);
   if (!album) {
     return;
   }
@@ -46,8 +46,8 @@ export async function generateMetadata({
   };
 }
 
-const GalleryPage = ({ params }: GalleryPageProps) => {
-  let album = albums.find((a) => a.id === params.id);
+const GalleryPage = async ({ params }: GalleryPageProps) => {
+  let album = await getAlbumById(params.id);
 
   if (!album) {
     return notFound();
@@ -55,7 +55,7 @@ const GalleryPage = ({ params }: GalleryPageProps) => {
 
   return (
     <div className="p-4">
-      <GalleryLayout albumId={album.id} />
+      <GalleryLayout albumId={album.album_id} />
     </div>
   );
 };

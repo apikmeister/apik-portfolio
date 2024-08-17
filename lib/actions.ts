@@ -44,3 +44,40 @@ export async function saveGuestbookEntry(formData: FormData) {
 
   revalidatePath("/guestbook");
 }
+
+export async function getAlbumById(id: string) {
+  return await queryBuilder
+    .selectFrom("albums")
+    .selectAll()
+    .where("album_id", "=", id)
+    .executeTakeFirst();
+}
+
+export async function getAllAlbums() {
+  const totalAlbums =  await queryBuilder
+    .selectFrom("albums")
+    .select(({ fn }) => [fn.count("id").as("count")])
+    .executeTakeFirstOrThrow();
+    
+    return Number(totalAlbums.count);
+}
+
+export async function getAlbumPagination(
+  albumPerPage: number,
+  currPage: number
+) {
+  return await queryBuilder
+    .selectFrom("albums")
+    .selectAll()
+    .offset((currPage - 1) * albumPerPage)
+    .limit(albumPerPage)
+    .execute();
+}
+
+export async function getImageByAlbumId(albumId: string) {
+  return await queryBuilder
+    .selectFrom("images")
+    .select(["image_url"])
+    .where("album_id", "=", albumId)
+    .execute();
+}

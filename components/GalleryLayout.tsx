@@ -16,7 +16,6 @@ interface ExifData {
 interface ImageWithExif {
   src: string;
   alt: string;
-  isLandscape: boolean;
   exifData: ExifData;
 }
 
