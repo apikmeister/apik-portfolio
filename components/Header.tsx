@@ -35,7 +35,7 @@ const Header = () => {
   }
 
   if (pathname.includes("/projects/")) {
-    pathname = "/projects";
+    pathname = "/guestbook";
   }
 
   return (
@@ -61,7 +61,7 @@ const Header = () => {
                       {name}
                       {path === pathname ? (
                         <motion.div
-                          className="absolute h-[1px] top-7 mx-2 inset-0 bg-neutral-400 dark:bg-neutral-800 z-[-1] dark:bg-gradient-to-r from-transparent to-neutral-900"
+                          className="absolute h-[1px] top-7 mx-2 inset-0 bg-neutral-800 dark:bg-neutral-400 z-[-1] dark:bg-gradient-to-r from-transparent"
                           layoutId="sidebar"
                           transition={{
                             type: "spring",

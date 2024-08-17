@@ -7,7 +7,6 @@ import Info from "./Info"
 import Logo from "./Logo"
 import Providers from "./Providers"
 import Skills from "./Skills"
-import MasonryGrid from "./MasonryGrid"
 import Projects from "./Projects"
 import IconCloud from "./IconCloud"
 import MyStack from "./MyStack"
@@ -24,7 +23,6 @@ export {
     Logo,
     Providers,
     Skills,
-    MasonryGrid,
     Projects,
     IconCloud,
     MyStack,

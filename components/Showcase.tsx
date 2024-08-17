@@ -54,7 +54,7 @@ const secondRow = logos.slice(logos.length / 2);
 const Showcase = () => {
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <h4 className="mb-8">moments captured, still or alive.</h4>
+      <h4 className="mb-8 tracking-tighter">moments captured, still or alive.</h4>
       <div className="relative flex h-[500px] w-screen max-w-none flex-col items-center justify-center overflow-hidden md:shadow-xl">
         <Marquee className="[--duration:20s]">
           {firstRow.map((data, idx) => (

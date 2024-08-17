@@ -47,7 +47,7 @@ export default async function GuestbookPage() {
 
   return (
     <section className="h-screen">
-      <h1 className="font-bold text-2xl mb-8 tracking-tighter">
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         sign my guestbook
       </h1>
       {session?.user ? (
