@@ -1,6 +1,6 @@
 function About() {
   return (
-    <div className="h-screen flex flex-col justify-evenly items-center overflow-hidden">
+    <section className="h-screen flex flex-col justify-evenly items-center overflow-hidden snap-always snap-center">
       <h1 className="sm:text-4xl font-bold">Here is a little background</h1>
       <article className="text-justify text-xs sm:text-base whitespace-pre-line lg:w-1/2 text-gray-800 dark:text-gray-400  prose dark:prose-invert max-w-prose">
         <p>
@@ -24,7 +24,7 @@ function About() {
           me and how I can contribute to this exciting field.
         </p>
       </article>
-    </div>
+    </section>
   );
 }
 

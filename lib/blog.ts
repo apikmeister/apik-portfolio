@@ -26,6 +26,10 @@ function getMDXData(dir: any) {
     })
 }
 
+export function getProjectPosts() {
+    return getMDXData(path.join(process.cwd(), 'content/projects'));
+}
+
 export function getBlogPosts() {
-    return getMDXData(path.join(process.cwd(), 'content'));
+    return getMDXData(path.join(process.cwd(), 'content/blogs'));
 }

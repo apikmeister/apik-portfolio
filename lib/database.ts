@@ -1,4 +1,3 @@
-// import 'server-only' not working with API routes yet
 import { Generated, Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
@@ -15,9 +14,26 @@ interface ViewsTable {
   count: number;
 }
 
+interface AlbumsTable {
+  id: Generated<number>;
+  album_id: string;
+  name: string;
+  description?: string;
+  date: string;
+  thumbnail: string;
+}
+
+interface ImagesTable {
+  id: Generated<number>;
+  album_id: string;
+  image_url: string;
+}
+
 interface Database {
   guestbook: GuestbookTable;
   views: ViewsTable;
+  albums: AlbumsTable;
+  images: ImagesTable;
 }
 
 export const queryBuilder = new Kysely<Database>({

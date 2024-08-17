@@ -1,19 +1,16 @@
-import Link from "next/link";
-import { Suspense } from "react";
-import ViewCounter from "./view-counter";
-import { getViewsCount } from "lib/metrics";
-import { getBlogPosts } from "lib/blog";
-import { Views } from "@/components/Views";
+import { Views } from '@/components/Views';
+import { getProjectPosts } from '@/lib/blog';
+import Link from 'next/link';
+import React, { Suspense } from 'react'
 
-export default function BlogList() {
-  let allBlogs = getBlogPosts();
-
+const ProjectPage = () => {
+    let allProject = getProjectPosts();
   return (
-    <section className="h-screen">
+    <section className='h-screen'>
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         read my blog
       </h1>
-      {allBlogs
+      {allProject
         .sort((a, b) => {
           if (
             new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -22,22 +19,24 @@ export default function BlogList() {
           }
           return 1;
         })
-        .map((post) => (
+        .map((project) => (
           <Link
-            key={post.slug}
+            key={project.slug}
             className="flex flex-col space-y-1 mb-4"
-            href={`/blog/${post.slug}`}
+            href={`/blog/${project.slug}`}
           >
             <div className="w-full flex flex-col">
               <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
-                {post.metadata.title}
+                {project.metadata.title}
               </p>
               <Suspense fallback={<p className="h-6" />}>
-                <Views slug={post.slug} />
+                <Views slug={project.slug} />
               </Suspense>
             </div>
           </Link>
         ))}
     </section>
-  );
+  )
 }
+
+export default ProjectPage
