@@ -4,7 +4,7 @@ import { GitFork, MoveRight, Star } from "lucide-react";
 
 export default function Projects(repos: TopRepos) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center h-full md:h-screen">
       <h2 className="mb-8 font-bold text-xl">My Projects</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 justify-center">
         {repos.Repos.map((repo: Repos) => (

@@ -34,7 +34,7 @@ const slugs = [
 
 const MyStack = () => {
   return (
-    <section className="flex flex-col items-center snap-always snap-center">
+    <section className="flex flex-col items-center h-screen">
       <h2 className="mb-8 font-bold text-xl">My Stacks</h2>
       <div className="max-w-[32rem] pb-[40px]">
         <IconCloud iconSlugs={slugs} />
