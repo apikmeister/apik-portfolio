@@ -1,8 +1,8 @@
 "use client";
 
-import { MoveRight } from "lucide-react";
+import { Github, Instagram, Linkedin, MoveRight, Twitter } from "lucide-react";
 import Image from "next/image";
-import Link from 'next/link'
+import Link from "next/link";
 
 function Info() {
   return (
@@ -10,7 +10,9 @@ function Info() {
       <div className="absolute inset-0 bg-gradient-to-r from-violet-800 to-rose-500 blur-3xl w-56 h-40 skew-y-[15deg] top-80 -z-10 rounded-full" />
       <div className="h-screen flex sm:flex-row flex-col items-center justify-evenly md:justify-around overflow-hidden">
         <div className=" flex flex-col gap-y-3">
-          <h1 className="sm:text-2xl md:text-4xl font-bold text-slate-700 dark:text-slate-200">Hi, I'm Afiq 👋</h1>
+          <h1 className="sm:text-2xl md:text-4xl font-bold text-slate-700 dark:text-slate-200">
+            Hi, I'm Afiq 👋
+          </h1>
           <p className="text-slate-800 dark:text-slate-400 text-xs sm:text-sm w-[15rem] sm:w-[24rem]">
             A mobile computing student learning to give a big impact in the tech
             industry. I love to learn new things and always open to new
@@ -25,6 +27,16 @@ function Info() {
               <MoveRight />
             </span>
           </Link>
+          <div className="flex flex-row gap-x-2">
+            <Link href="https://www.linkedin.com/in/afiq-cs/">
+              <Linkedin />
+            </Link>
+            <Link href="https://github.com/apikmeister">
+              <Github />
+            </Link>
+            <Link href="">
+            </Link>
+          </div>
         </div>
         <div className="flex justify-center items-center">
           <Image

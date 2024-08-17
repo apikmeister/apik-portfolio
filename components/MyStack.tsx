@@ -34,12 +34,12 @@ const slugs = [
 
 const MyStack = () => {
   return (
-    <div className="flex flex-col items-center">
+    <section className="flex flex-col items-center snap-always snap-center">
       <h2 className="mb-8 font-bold text-xl">My Stacks</h2>
       <div className="max-w-[32rem] pb-[40px]">
         <IconCloud iconSlugs={slugs} />
       </div>
-    </div>
+    </section>
   );
 };
 
