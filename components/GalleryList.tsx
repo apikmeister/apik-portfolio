@@ -1,4 +1,4 @@
-import { formatDate, formatDateMonth } from "@/lib/utils/dateFormat";
+import { formatDateMonth } from "@/lib/utils/dateFormat";
 import Link from "next/link";
 
 interface Album {
@@ -18,10 +18,11 @@ interface GalleryListProps {
 
 const GalleryList = ({ albums, currentPage, totalPages }: GalleryListProps) => {
   return (
-    <section>
+    <section className="flex flex-col min-h-screen">
       <h1 className="font-medium text-2xl mb-4 tracking-tighter">
         through my lens
       </h1>
+
       <section className="grid grid-cols-1 gap-6 py-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:py-6">
         {albums.map((album) => (
           <div
@@ -50,8 +51,7 @@ const GalleryList = ({ albums, currentPage, totalPages }: GalleryListProps) => {
         ))}
       </section>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-between mt-6">
+      <div className="mt-auto flex justify-between">
         <Link href={`?page=${currentPage - 1}`} passHref>
           <button
             disabled={currentPage === 1}

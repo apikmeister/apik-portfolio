@@ -6,7 +6,7 @@ import React, { Suspense } from 'react'
 const ProjectPage = () => {
     let allProject = getProjectPosts();
   return (
-    <section>
+    <section className='h-screen'>
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         read my blog
       </h1>

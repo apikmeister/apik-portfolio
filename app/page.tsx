@@ -6,12 +6,11 @@ export default async function Home() {
   const repos = await getRepos();
   return (
     <>
-      <div className="min-w-0 px-2 md:px-0 max-w-4xl mb-10 mx-4 lg:mx-auto md:mx-5">
+      <div className="">
         <Info />
         <About />
         <MyStack />
         {/* <Education /> */}
-        {/* <Skills /> */}
         <Projects Repos={repos} />
         {/* <Contact /> */}
       </div>
