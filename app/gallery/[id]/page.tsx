@@ -1,5 +1,4 @@
 import { GalleryLayout } from "@/components";
-import { GalleryLayoutWrapper } from "@/components/GalleryPageWrapper";
 import { getAlbumById } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { Metadata } from "next";
@@ -62,12 +61,6 @@ const GalleryPage = async ({ params, searchParams }: GalleryPageProps) => {
 
   return (
     <div className="p-4">
-      {/* <GalleryLayoutWrapper
-        albumId={album.album_id}
-        isAdmin={
-          session?.user?.email === "afiq.mohamad90@gmail.com" ? true : false
-        }
-      /> */}
       <GalleryLayout
         albumId={album.album_id}
         isAdmin={

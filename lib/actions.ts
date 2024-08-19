@@ -56,29 +56,21 @@ export async function getGuestbookEntries() {
     .execute();
 }
 
-// export async function getAlbumById(id: string) {
-//   return await queryBuilder
-//     .selectFrom("albums")
-//     .selectAll()
-//     .where("album_id", "=", id)
-//     .executeTakeFirst();
-// }
-
 export async function getAlbumById(albumId: string, providedLink?: string) {
   let session = await auth();
   let userEmail = session?.user?.email;
-
-  if (!userEmail) {
-    return null;
-  }
-
-  userEmail = userEmail as string;
 
   const album = await queryBuilder
     .selectFrom("albums")
     .selectAll()
     .where("album_id", "=", albumId)
     .executeTakeFirst();
+
+  if (!userEmail) {
+    return album;
+  }
+
+  userEmail = userEmail as string;
 
   if (!album) {
     return null;
@@ -93,7 +85,6 @@ export async function getAlbumById(albumId: string, providedLink?: string) {
   }
 
   if (album.access_level === "link") {
-    console.log('i go link')
     if (album.shareable_link === providedLink) {
       return album;
     } else {
@@ -169,7 +160,6 @@ export async function getAlbumPagination(
     .limit(albumPerPage)
     .execute();
 }
-
 
 export async function getImageByAlbumId(albumId: string) {
   return await queryBuilder
