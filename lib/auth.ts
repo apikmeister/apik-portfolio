@@ -1,8 +1,11 @@
-import { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import DiscordProvider from "next-auth/providers/discord";
 
-export const authOptions: NextAuthOptions = ({
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth({
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -15,4 +18,4 @@ export const authOptions: NextAuthOptions = ({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET as string,
-});
+})

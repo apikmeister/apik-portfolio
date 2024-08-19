@@ -21,6 +21,16 @@ interface AlbumsTable {
   description?: string;
   date: string;
   thumbnail: string;
+  access_level: string;
+  shareable_link?: string;
+  downloadable: boolean;
+}
+
+interface AlbumSharesTable {
+  id: Generated<number>;
+  album_id: string;
+  shared_with: string;
+  shared_at: string;
 }
 
 interface ImagesTable {
@@ -33,6 +43,7 @@ interface Database {
   guestbook: GuestbookTable;
   views: ViewsTable;
   albums: AlbumsTable;
+  album_shares: AlbumSharesTable;
   images: ImagesTable;
 }
 
