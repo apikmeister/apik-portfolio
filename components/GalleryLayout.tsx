@@ -5,9 +5,10 @@ import { BlurFade } from "@/components";
 import { CameraIcon, Download } from "lucide-react";
 import { getImagesWithExif } from "@/lib/utils/exifUtils";
 import Link from "next/link";
-import { getAlbumById } from "@/lib/actions";
+import { generateShareableLink, getAlbumById } from "@/lib/actions";
 import { Album } from "./GalleryList";
 import { formatDateMonth } from "@/lib/utils/dateFormat";
+import { auth } from "@/lib/auth";
 
 interface ExifData {
   Model?: string;
@@ -25,6 +26,8 @@ interface ImageWithExif {
 
 interface GalleryLayoutProps {
   albumId: string;
+  isAdmin: boolean;
+  sharedAccessLink?: string;
 }
 
 const downloadGalleryAsZip = async (albumId: string, imageUrls: string[]) => {
@@ -48,20 +51,21 @@ const downloadGalleryAsZip = async (albumId: string, imageUrls: string[]) => {
   link.click();
 };
 
-const GalleryLayout = ({ albumId }: GalleryLayoutProps) => {
+const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProps) => {
   const [album, setAlbum] = useState<Album | null>(null);
   const [imagesWithExif, setImagesWithExif] = useState<ImageWithExif[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [downloadable, setDownloadable] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [shareableLink, setShareableLink] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const albumData = await getAlbumById(albumId);
+        const albumData = await getAlbumById(albumId, sharedAccessLink);
         if (albumData) {
           setAlbum(albumData);
-          const images = await getImagesWithExif(albumId);
+          const images = await getImagesWithExif(albumId, sharedAccessLink);
           setImagesWithExif(images);
           setDownloadable(albumData.downloadable);
         }
@@ -88,6 +92,29 @@ const GalleryLayout = ({ albumId }: GalleryLayoutProps) => {
     }
   };
 
+  const handleCreateShareableLink = async () => {
+    try {
+      const { origin } = window.location;
+      const shareableToken = await generateShareableLink(albumId);
+      const link = `${origin}/gallery/${albumId}?shared=${shareableToken}`;
+      setShareableLink(link);
+    } catch (error) {
+      console.error("Failed to generate album link", error);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (shareableLink) {
+      navigator.clipboard
+        .writeText(shareableLink)
+        .then(() => {
+          alert("Link copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Failed to copy the link", error);
+        });
+    }
+  };
 
   if (loading) {
     return (
@@ -118,15 +145,26 @@ const GalleryLayout = ({ albumId }: GalleryLayoutProps) => {
           <p className="max-w-[50%] text-sm text-slate-500">
             {album?.description}
           </p>
+          {isAdmin && (
+            <>
+              <button onClick={handleCreateShareableLink}>Share</button>
+              {shareableLink && (
+                <div>
+                  <p>Shareable Link: {shareableLink}</p>
+                  <button onClick={handleCopyLink}>Copy Link</button>
+                </div>
+              )}
+            </>
+          )}
           {downloadable && (
             <button
               onClick={handleDownloadClick}
-              className={`mt-4 bg-primary text-white px-4 py-2 rounded ${
+              className={`mt-4 bg-primary text-white text-sm py-2 rounded ${
                 isDownloading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isDownloading}
             >
-              {isDownloading ? "Downloading..." : "Download Album"}
+              {isDownloading ? "Downloading..." : "Download Album (.zip)"}
             </button>
           )}
         </div>

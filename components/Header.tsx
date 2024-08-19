@@ -46,7 +46,7 @@ const Header = () => {
             {Object.entries(navItems).map(([path, { name }]) => {
               const isActive = path === pathname;
               return (
-                <li id={path}>
+                <li key={path}>
                   <Link
                     key={path}
                     href={path}

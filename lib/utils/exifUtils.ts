@@ -34,8 +34,8 @@ const fetchExifData = async (imageSrc: string): Promise<ExifData> => {
   });
 };
 
-export const getImagesWithExif = async (albumId: string): Promise<ImageWithExif[]> => {
-  const album = await getAlbumById(albumId);
+export const getImagesWithExif = async (albumId: string, sharedAccessLink?: string): Promise<ImageWithExif[]> => {
+  const album = await getAlbumById(albumId, sharedAccessLink);
 
   if (!album) {
     throw new Error(`Album with id ${albumId} not found`);
