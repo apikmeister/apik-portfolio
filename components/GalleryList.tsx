@@ -2,8 +2,8 @@ import { formatDateMonth } from "@/lib/utils/dateFormat";
 import Link from "next/link";
 
 export interface Album {
-  id: number;
-  album_id: string;
+  id: number | null;
+  album_id: string | null;
   name: string;
   description?: string;
   date: string;
@@ -11,6 +11,8 @@ export interface Album {
   access_level: string;
   shareable_link?: string;
   downloadable: boolean;
+  shared_with?: string | null;
+  shared_at?: string | null;
 }
 
 interface GalleryListProps {

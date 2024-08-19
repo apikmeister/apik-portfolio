@@ -1,10 +1,13 @@
 import { GalleryLayout } from "@/components";
+import { GalleryLayoutWrapper } from "@/components/GalleryPageWrapper";
 import { getAlbumById } from "@/lib/actions";
+import { auth } from "@/lib/auth";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 interface GalleryPageProps {
   params: { id: string };
+  searchParams: { shared: string}
 }
 
 export async function generateMetadata({
@@ -18,7 +21,9 @@ export async function generateMetadata({
   }
 
   const title = album.name;
-  const description = album.description || `View the ${album.name} album with a collection of stunning photos.`;
+  const description =
+    album.description ||
+    `View the ${album.name} album with a collection of stunning photos.`;
   const ogImage = album.thumbnail
     ? `https://apik.me${album.thumbnail}`
     : `https://apik.me/og?title=${title}`;
@@ -46,16 +51,30 @@ export async function generateMetadata({
   };
 }
 
-const GalleryPage = async ({ params }: GalleryPageProps) => {
-  let album = await getAlbumById(params.id);
+const GalleryPage = async ({ params, searchParams }: GalleryPageProps) => {
+  let album = await getAlbumById(params.id, searchParams.shared);
 
   if (!album) {
     return notFound();
   }
 
+  let session = await auth();
+
   return (
     <div className="p-4">
-      <GalleryLayout albumId={album.album_id} />
+      {/* <GalleryLayoutWrapper
+        albumId={album.album_id}
+        isAdmin={
+          session?.user?.email === "afiq.mohamad90@gmail.com" ? true : false
+        }
+      /> */}
+      <GalleryLayout
+        albumId={album.album_id}
+        isAdmin={
+          session?.user?.email === "afiq.mohamad90@gmail.com" ? true : false
+        }
+        sharedAccessLink={searchParams.shared}
+      />
     </div>
   );
 };

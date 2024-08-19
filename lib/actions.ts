@@ -68,6 +68,12 @@ export async function getAlbumById(albumId: string, providedLink?: string) {
   let session = await auth();
   let userEmail = session?.user?.email;
 
+  if (!userEmail) {
+    return null;
+  }
+
+  userEmail = userEmail as string;
+
   const album = await queryBuilder
     .selectFrom("albums")
     .selectAll()
@@ -78,7 +84,7 @@ export async function getAlbumById(albumId: string, providedLink?: string) {
     return null;
   }
 
-  if (session?.user?.email === 'afiq.mohamad90@gmail.com') {
+  if (session?.user?.email === "afiq.mohamad90@gmail.com") {
     return album;
   }
 
@@ -87,6 +93,7 @@ export async function getAlbumById(albumId: string, providedLink?: string) {
   }
 
   if (album.access_level === "link") {
+    console.log('i go link')
     if (album.shareable_link === providedLink) {
       return album;
     } else {
@@ -123,14 +130,46 @@ export async function getAlbumPagination(
   albumPerPage: number,
   currPage: number
 ) {
+  let session = await auth();
+  const userEmail = session?.user?.email;
+
+  if (!userEmail) {
+    return await queryBuilder
+      .selectFrom("albums")
+      .selectAll()
+      .where("access_level", "=", "public")
+      .offset((currPage - 1) * albumPerPage)
+      .limit(albumPerPage)
+      .execute();
+  }
+
+  if (userEmail === "afiq.mohamad90@gmail.com") {
+    return await queryBuilder
+      .selectFrom("albums")
+      .selectAll()
+      .offset((currPage - 1) * albumPerPage)
+      .limit(albumPerPage)
+      .execute();
+  }
+
   return await queryBuilder
     .selectFrom("albums")
+    .leftJoin("album_shares", "albums.album_id", "album_shares.album_id")
     .selectAll()
-    .where("access_level", "=", "public")
+    .where((eb) =>
+      eb.or([
+        eb("albums.access_level", "=", "public"),
+        eb.and([
+          eb("albums.access_level", "=", "private"),
+          eb("album_shares.shared_with", "=", userEmail),
+        ]),
+      ])
+    )
     .offset((currPage - 1) * albumPerPage)
     .limit(albumPerPage)
     .execute();
 }
+
 
 export async function getImageByAlbumId(albumId: string) {
   return await queryBuilder
