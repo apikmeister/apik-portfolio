@@ -1,13 +1,16 @@
 import { formatDateMonth } from "@/lib/utils/dateFormat";
 import Link from "next/link";
 
-interface Album {
+export interface Album {
   id: number;
   album_id: string;
   name: string;
   description?: string;
   date: string;
   thumbnail: string;
+  access_level: string;
+  shareable_link?: string;
+  downloadable: boolean;
 }
 
 interface GalleryListProps {

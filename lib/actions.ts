@@ -1,10 +1,10 @@
 "use server";
 
-import { getServerSession } from "next-auth/next";
+import { v4 as uuidv4 } from "uuid";
 import { type Session } from "next-auth";
 import { queryBuilder } from "lib/database";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
-import { authOptions } from "./auth";
+import { auth } from "./auth";
 import { sql } from "kysely";
 
 export async function increment(slug: string) {
@@ -22,7 +22,7 @@ export async function increment(slug: string) {
 }
 
 async function getSession(): Promise<Session> {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session || !session.user) {
     throw new Error("Unauthorized");
   }
@@ -45,21 +45,78 @@ export async function saveGuestbookEntry(formData: FormData) {
   revalidatePath("/guestbook");
 }
 
-export async function getAlbumById(id: string) {
+export async function getGuestbookEntries() {
+  noStore();
+
   return await queryBuilder
+    .selectFrom("guestbook")
+    .selectAll()
+    .orderBy("updated_at", "desc")
+    .limit(100)
+    .execute();
+}
+
+// export async function getAlbumById(id: string) {
+//   return await queryBuilder
+//     .selectFrom("albums")
+//     .selectAll()
+//     .where("album_id", "=", id)
+//     .executeTakeFirst();
+// }
+
+export async function getAlbumById(albumId: string, providedLink?: string) {
+  let session = await auth();
+  let userEmail = session?.user?.email;
+
+  const album = await queryBuilder
     .selectFrom("albums")
     .selectAll()
-    .where("album_id", "=", id)
+    .where("album_id", "=", albumId)
     .executeTakeFirst();
+
+  if (!album) {
+    return null;
+  }
+
+  if (session?.user?.email === 'afiq.mohamad90@gmail.com') {
+    return album;
+  }
+
+  if (album.access_level === "public") {
+    return album;
+  }
+
+  if (album.access_level === "link") {
+    if (album.shareable_link === providedLink) {
+      return album;
+    } else {
+      return null;
+    }
+  }
+
+  if (album.access_level === "private" && userEmail) {
+    const shared = await queryBuilder
+      .selectFrom("album_shares")
+      .selectAll()
+      .where("album_id", "=", albumId)
+      .where("shared_with", "=", userEmail)
+      .executeTakeFirst();
+
+    if (shared) {
+      return album;
+    }
+  }
+
+  return null;
 }
 
 export async function getAllAlbums() {
-  const totalAlbums =  await queryBuilder
+  const totalAlbums = await queryBuilder
     .selectFrom("albums")
     .select(({ fn }) => [fn.count("id").as("count")])
     .executeTakeFirstOrThrow();
-    
-    return Number(totalAlbums.count);
+
+  return Number(totalAlbums.count);
 }
 
 export async function getAlbumPagination(
@@ -69,6 +126,7 @@ export async function getAlbumPagination(
   return await queryBuilder
     .selectFrom("albums")
     .selectAll()
+    .where("access_level", "=", "public")
     .offset((currPage - 1) * albumPerPage)
     .limit(albumPerPage)
     .execute();
@@ -80,4 +138,26 @@ export async function getImageByAlbumId(albumId: string) {
     .select(["image_url"])
     .where("album_id", "=", albumId)
     .execute();
+}
+
+export async function canDownloadAlbum(albumId: string) {
+  const isDownloadable = await queryBuilder
+    .selectFrom("albums")
+    .select(["downloadable"])
+    .where("album_id", "=", albumId)
+    .executeTakeFirst();
+
+  return Boolean(isDownloadable);
+}
+
+export async function generateShareableLink(albumId: string) {
+  const shareableLink = uuidv4();
+
+  await queryBuilder
+    .updateTable("albums")
+    .set({ shareable_link: shareableLink, access_level: "link" })
+    .where("album_id", "=", albumId)
+    .execute();
+
+  return shareableLink;
 }
