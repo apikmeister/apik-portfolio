@@ -51,7 +51,11 @@ const downloadGalleryAsZip = async (albumId: string, imageUrls: string[]) => {
   link.click();
 };
 
-const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProps) => {
+const GalleryLayout = ({
+  albumId,
+  isAdmin,
+  sharedAccessLink,
+}: GalleryLayoutProps) => {
   const [album, setAlbum] = useState<Album | null>(null);
   const [imagesWithExif, setImagesWithExif] = useState<ImageWithExif[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -135,7 +139,7 @@ const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProp
   return (
     <section>
       <div className="py-4">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between items-center">
           <h1 className="font-bold">{album?.name}</h1>
           <p className="text-slate-500 text-xs">
             {formatDateMonth(album!.date) || "Unknown Date"}
@@ -178,33 +182,35 @@ const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProp
                 src={image.src}
                 alt={image.alt}
               />
-              <div className="absolute inset-0 bg-black/70 p-2 sm:p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/70 p-3 sm:p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <div className="flex h-full flex-col justify-between">
                   <div>
-                    <p className="text-[0.5rem] sm:text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       ISO{" "}
                       {image.exifData?.ISOSpeedRatings?.toString() || "Unknown"}
                       , {formatShutterSpeed(image.exifData?.ExposureTime)},{" "}
                       {formatAperture(image.exifData?.FNumber)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CameraIcon className="h-2 w-2 sm:h-4 sm:w-4" />
-                    <span className="text-[0.5rem] sm:text-sm text-muted-foreground">
-                      {image.exifData?.Model || "Unknown"},{" "}
-                      {formatFocalLength(image.exifData?.FocalLength)}
-                    </span>
+                  <div className="flex flex-row justify-between">
+                    <div className="flex items-center gap-2">
+                      <CameraIcon className="h-4 w-4" />
+                      <span className="text-xs sm:text-sm text-muted-foreground">
+                        {image.exifData?.Model || "Unknown"},{" "}
+                        {formatFocalLength(image.exifData?.FocalLength)}
+                      </span>
+                    </div>
+                    {downloadable && (
+                      <Link
+                        href={image.src}
+                        download
+                        className="bg-primary text-white rounded"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Link>
+                    )}
                   </div>
                 </div>
-                {downloadable && (
-                  <Link
-                    href={image.src}
-                    download
-                    className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1 rounded"
-                  >
-                    <Download />
-                  </Link>
-                )}
               </div>
             </div>
           </BlurFade>
