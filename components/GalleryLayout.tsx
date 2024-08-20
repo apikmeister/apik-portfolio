@@ -178,10 +178,10 @@ const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProp
                 src={image.src}
                 alt={image.alt}
               />
-              <div className="absolute inset-0 bg-black/70 p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="absolute inset-0 bg-black/70 p-2 sm:p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <div className="flex h-full flex-col justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-[0.5rem] sm:text-sm text-muted-foreground">
                       ISO{" "}
                       {image.exifData?.ISOSpeedRatings?.toString() || "Unknown"}
                       , {formatShutterSpeed(image.exifData?.ExposureTime)},{" "}
@@ -189,8 +189,8 @@ const GalleryLayout = ({ albumId, isAdmin, sharedAccessLink }: GalleryLayoutProp
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CameraIcon className="h-4 w-4" />
-                    <span className="text-sm text-muted-foreground">
+                    <CameraIcon className="h-2 w-2 sm:h-4 sm:w-4" />
+                    <span className="text-[0.5rem] sm:text-sm text-muted-foreground">
                       {image.exifData?.Model || "Unknown"},{" "}
                       {formatFocalLength(image.exifData?.FocalLength)}
                     </span>
