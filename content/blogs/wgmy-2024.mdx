@@ -1,0 +1,412 @@
+---
+title: Wargames 2024 CTF - Write-up
+publishedAt: 2024-12-30
+excerpt: Wargames 2024 CTF - Write-up
+tags:
+  - CTF
+  - Write-up
+  - wargames.my
+---
+
+# Forensic
+
+## I Cant Manipulate People
+
+```plaintext
+Partial traffic packet captured from hacked machine, can you analyze the provided pcap file to extract the message from the packet perhaps by reading the packet data?
+
+Author: Ap0k4L1p5
+```
+
+{/* <img src="https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/get%20pcap%20data.PNG" /> */}
+
+Given a pcap file, we can use Wireshark to analyze the packet. The packet seems to contains data but when I extract using tshark, it seems unreadable.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/pcap.PNG`}
+    width={600}
+    height={400}
+/>
+
+I tried to reorder the packet data using `reordercap` and found that some frames is out of order.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/reorder.PNG`}
+    width={600}
+    height={400}
+/>
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/get%20pcap%20data.PNG`}
+    width={600}
+    height={400}
+/>
+
+After reordering the packet, The data now seems more readable and looks like it in hex format.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/packetdata%20hex.PNG`}
+    width={600}
+    height={400}
+/>
+
+Using xxd to decode the flag.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/manipulate/get%20the%20flag.PNG`}
+    width={600}
+    height={400}
+/>
+
+```WGMY{1e3b71d57e466ab71b43c2641a4b34f4}```
+
+## Unwanted Meow
+
+```plaintext
+Uh.. Oh.. Help me, I just browsing funny cats memes, when I click download cute cat picture, the file that been download seems little bit wierd. I accidently run the file making my files shredded. Ughh now I hate cat meowing at me.
+
+Author: 4jai
+```
+
+Received a corrupted jpeg file, directly inspect it using `xxd` and found out the file hex contains a lot of words `meow`.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/meow/suspicious%20meow.PNG`}
+    width={600}
+    height={400}
+/>
+
+Going to [HexEdit](https://hexed.it/) to edit the hex and remove all of the `meow` words.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/meow/remove%20meow.PNG`}
+    width={600}
+    height={400}
+/>
+
+Now we can open the image but the flag is still unreadable.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/meow/flag(1).jpeg`}
+    width={600}
+    height={400}
+/>
+
+After checking on the hex again, I found out that there is another `meow` words forming in the hex after removing the first layer of `meow`. I need to remove all of it.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/meow/flag(3).jpeg`}
+    width={600}
+    height={400}
+/>
+
+and we got the flag `WGMY{4a4be40c96ac6314e91d93f38043a634}`
+
+## Oh Man
+
+```plaintext
+We received a PCAP file from an admin who suspects an attacker exfiltrated sensitive data. 
+Can you analyze the PCAP file and uncover what was stolen?
+
+Author: h0j3n
+```
+
+Given a pcap file, I opened it using Wireshark and found out that there is SMB protocol used in the packet.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/pcap.PNG`}
+    width={600}
+    height={400}
+/>
+
+After analysing the packet, `Session Setup Request` packet that is successful. By referring to this youtube videos [https://www.youtube.com/watch?v=lhhlgoMjM7o](https://www.youtube.com/watch?v=lhhlgoMjM7o), 
+I found out how to extract the NTLM hash from the packet.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/hashcat.PNG`}
+    width={600}
+    height={400}
+/>
+
+After extracting the NTLM hash, I tried to crack it using hashcat and got the password `password<3`.
+
+Insert the password into the wireshark NTLM Secure Service Provider and try to export the SMB object.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/ntlm.PNG`}
+    width={600}
+    height={400}
+/>
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/object%20export.PNG`}
+    width={600}
+    height={400}
+/>
+
+After exporting the object, we got some files to be investigated. Try to `cat` and read all the readable files and found 
+an interesting thing about the `.log` file that has been exported.
+
+Try to run the given command to get the `secretz` but got minidump invalid signature error from *pypykatz*. 
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/invalid%20signatur.PNG`}
+    width={600}
+    height={400}
+/>
+
+Try to search on the google for the first clue from the interesting file and found a tool from github that use to retore the signature.
+The tool is called [nanodump](https://github.com/fortra/nanodump).
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/google.PNG`}
+    width={600}
+    height={400}
+/>
+
+Run the *scripts from nanodump* and run *pypykatz* again to get the flag.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/flag.PNG`}
+    width={600}
+    height={400}
+/>
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/forensic/oh%20man/Capture.PNG`}
+    width={600}
+    height={400}
+/>
+
+`wgmy{fbba48bee397414246f864fe4d2925e4}`
+
+# Game
+
+## World I
+
+```plaintext
+Game hacking is back!
+
+Can you save the princess?
+
+White screen? That is a part of the challenge, try to overcome it.
+
+Author: Trailbl4z3r & Monaruku
+```
+
+We got some games to play and hack it, now that's interesting. The game is a simple game that we need to save the princess by fighting all the enemies.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/game.PNG`}
+    width={600}
+    height={400}
+/>
+
+After playing the game, I found out that it is impossible to fight the last boss because it have the move to `one shot one kill` me T_T.
+
+Firstly, I tried to use Cheat Engine to manipulate my health value, but it seems that the game is protected from the memory manipulation **(maybe)** or my skill issue.
+
+Found the save files *(.rmmzsave)* can be manipulated using an online tools called [Save Editor Online](https://www.saveeditonline.com).
+
+I go crazy with it and give myself max of every stats possible.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/editedsavedfile.PNG`}
+    width={600}
+    height={400}
+/>
+
+Going through the game again and collect all the flag part.
+
+Part 1.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flag1.PNG`}
+    width={600}
+    height={400}
+/>
+Part 2.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flag2.PNG`}
+    width={600}
+    height={400}
+/>
+Part 3.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flag3.PNG`}
+    width={600}
+    height={400}
+/>
+Part 4 (written on lava).
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flaglava1.PNG`}
+    width={600}
+    height={400}
+/>
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flaglava2.PNG`}
+    width={600}
+    height={400}
+/>
+Before we got to achieve part 5 flag, we need to enter password to unlock the flag.
+
+Given number `23 7 13 25`, but the password asking for 4 digits only. I tried to guees it is a number to letter conversion and found out that it is `wgmy`.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/password%20last%20part.PNG`}
+    width={600}
+    height={400}
+/>
+Enter the password and get the last flag in QR code format.
+Part 5.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game1/flag5.PNG`}
+    width={600}
+    height={400}
+/>
+
+`wgmy{5ce7d7a7140ebabf5cd43effd3fcaac2}`
+
+## World II
+
+```plaintext
+Welp, time to do it again.
+
+Unable to install? That is a part of the challenge, try to overcome it.
+
+Author: Trailbl4z3r & Monaruku
+```
+
+Given an apk file, using apktool to decompile the apk.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/apkdecompile.PNG`}
+    width={600}
+    height={400}
+/>
+
+Found interesting folder, where it contains fully completed assets of the game with `index.html` and `package.json` file.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/interesting.PNG`}
+    width={600}
+    height={400}
+/>
+This `package.json` file looks like a perfect launcher for the game.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/package-json.PNG`}
+    width={600}
+    height={400}
+/>
+
+With a little diggin with chatgpt, I found out it was using the [NW.js](https://nwjs.io) as an application. Follow the steps given by chatgpt to download the NW.js, unzip and copy all the folder inside the assets into the NW.js directory and run it directly and we got the game up and running.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/chatgpt.PNG`}
+    width={600}
+    height={400}
+/>
+
+By using the same save file that I edited before, I can easily get the flag part 1, 2, 3, 4 and 5.
+
+Part 1.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flag1.PNG`}
+    width={600}
+    height={400}
+/>
+Part 2.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flag2.PNG`}
+    width={600}
+    height={400}
+/>
+Part 3.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flag3.PNG`}
+    width={600}
+    height={400}
+/>
+Part 4 (written on lava) *a lil bit tricky cause it gave us some capital letters here, but as we know the flag is in md5_hash so I just turn it into lowercase in my flag*.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flaglava1.PNG`}
+    width={600}
+    height={400}
+/>
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flaglava2.PNG`}
+    width={600}
+    height={400}
+/>
+Part 5.
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/game/game2/flag5.PNG`}
+    width={600}
+    height={400}
+/>
+
+`wgmy{4068a87d81d8c901043885bac4f51785}`
+
+# Misc
+
+## Christmas GIFt
+
+```plaintext
+Here is your christmas GIFt from santa! Just open and wait for it..
+
+Author: SKR
+```
+
+Open the gif using StegSolve and use the Frame Browser to check the last frame and get the flag.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/gift/solved.PNG`}
+    width={600}
+    height={400}
+/>
+
+`wgmy{1eaa6da7b7f5df6f7c0381c8f23af4d3}`
+
+## Invisible Ink
+
+```plaintext
+The flag is hidden somewhere in this GIF. You can't see it? Must be written in transparent ink.
+
+Author: Yes
+```
+
+Open the gif using StegSolve and use the Frame Browser to check every frames and found two suspicious frame.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/ink/sus.PNG`}
+    width={600}
+    height={400}
+/>
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/ink/sus2.PNG`}
+    width={600}
+    height={400}
+/>
+
+Export and open the two suspicious frame using StegSolve and give them colors.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/ink/solved5.bmp`}
+    width={600}
+    height={400}
+/>
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/ink/solved6new.bmp`}
+    width={600}
+    height={400}
+/>
+
+Stack the image using [PineTools](https://pinetools.com/overlay-images) and tweak a lil bit the opacity to get the flag.
+
+<Image
+    src={`https://cdn.apik.me/blogs/wargames-2024/misc/ink/flag.png`}
+    width={600}
+    height={400}
+/>
+
+`wgmy{d41d8cd98f0ob204e9800996ecf8427e}`
+
+
